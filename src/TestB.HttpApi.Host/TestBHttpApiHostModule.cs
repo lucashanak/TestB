@@ -28,6 +28,10 @@ using Volo.Abp.Modularity;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
+using System.Security.Cryptography.X509Certificates;
+using Volo.Abp.OpenIddict;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Hosting;
 
 namespace TestB;
 
@@ -46,6 +50,16 @@ public class TestBHttpApiHostModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
     {
+        PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
+        {
+            options.AddDevelopmentEncryptionAndSigningCertificate = false;
+        });
+
+        PreConfigure<OpenIddictServerBuilder>(builder =>
+        {
+            builder.AddEphemeralEncryptionKey();
+            builder.AddEphemeralSigningKey();
+        });
         PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>
